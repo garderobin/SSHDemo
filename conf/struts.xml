@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<!-- 配置国际化资源文件 -->
+	<constant name="struts.custom.i18n.resources" value="i18n"></constant>
+	<constant name="struts.enable.DynamicMethodInvocation" value="false" />
+	<constant name="struts.ui.theme" value="simple" />
+	<constant name="struts.devMode" value="true" />
+
+
+	<package name="default" extends="struts-default">
+
+		<!-- 定义一个有日志打印的拦截器栈 -->
+		<interceptors>
+			<interceptor name="log" class="app.struts.interceptor.LogInterceptor" />
+			<interceptor-stack name="logstack">
+				<interceptor-ref name="log"></interceptor-ref>
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+			</interceptor-stack>
+
+		</interceptors>
+
+		<default-interceptor-ref name="logstack"></default-interceptor-ref>
+		<!-- 定义全局结果 -->
+		<global-results>
+			<result name="login">/user/login.jsp</result>
+			<result name="success">/commond/success.jsp</result>
+		</global-results>
+
+		<!-- 业务层的操作日志 -->
+		<action name="log_*" class="businessLogAction" method="exec_{1}">
+			<result name="success">/core/loglist.jsp</result>
+		</action>
+		
+		<!-- 定时任务日志 -->
+		<action name="task_*" class="taskLogAction" method="exec_{1}">
+			<result name="success">/core/taskloglist.jsp</result>
+		</action>
+		<!-- 权限管理 -->
+		<action name="rights_*" class="rightsAction" method="exec_{1}">
+			<result name="list_page">/core/rightslist.jsp</result>
+		</action>
+	</package>
+
+
+	<!-- 包含其他文件 -->
+	<!-- <include file=""></include> -->
+</struts>

@@ -1,0 +1,11 @@
+[
+    { "id": "log_business", "text": "业务日志",  "attributes": { "href": "log_list.action" } },
+    { "id": "rights_manager", "text": "权限管理",  "attributes": { "href": "rights_list.action" } },
+    { "id": "1102", "text": "Base",  "children": [
+        { "id": "110201", "text": "Messager",  "attributes": { "href": "http://www.baidu.com" } },
+        { "id": "110202", "text": "Tooltip",  "attributes": { "href": "http://www.baidu.com" } },
+        { "id": "110203", "text": "Mask-Loading",  "attributes": { "href": "http://www.baidu.com" } },
+        { "id": "110204", "text": "通用Ajax错误处理", "attributes": { "href": "http://www.baidu.com" } }
+    ]
+    }
+]
