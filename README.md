@@ -1,3 +1,10 @@
+#说明#
+	这事一份用于学习SSH框架时写的Demo，主要用于学习Struts+Spring+Hibernate 前台使用
+	了EasyUi开发的框架的Demo
+	
+
+	
+
 #包结构#
     ├─constant        一些常量和静态方法
     ├─dao            dao层的接口（Spring的@Repository层）ModelDao命名
@@ -65,6 +72,7 @@ DAO层的方法应以如下规则命名:
 	public EntryPage queryPageEntry(final String hql, int page, final int size);
 ##DAO层的设计原则##
 DAO层顾名思义就是用来操作业务实体的CURD操作，因此不应该将业务逻辑添加到DAO层,业务层应到设计简单明了，通用。
+
 #Service层的方法定义#
 Service是J2EE软件的核心部分，主要涉及到软件的业务功能，它通过控制层将客户端请求分装传递到业务层，业务层根据具体的情况做成相应的操作，例如调用DAO层的方式实现对业务实体的控制.
 一般的设计原则是在业务层提供一套和DAO层统一的API接口。但为了明显的区分該方法调用是Service层的而不是DAO层的，对Service层的方法做如下规定:
@@ -90,8 +98,10 @@ Service是J2EE软件的核心部分，主要涉及到软件的业务功能，它
 	public List<T> findByHQL(String hql, Object[] objects);
 	//以分页的方式获得实体
 	public EntryPage queryPage(final String hql, int page, final int size);
+	
 ##Service层的设计原则##
 Service是一个系统的核心，所有的操作及判断都应当有该层完成，另外由于Spring在初始化的时候以单利的方式进行初始化，因此可以将一些常用的费时的操作放在该层，避免其他层因创建对象而带来的性能问题。另外该层也应该保证业务完整性，及数据库事务应该有该层控制并完成。
+
 #控制层Action的方法定义#
 该层有struts2实现，在此处层有一个简单的设计原则，及所以的非静态资源都应该有Action进行跳转，及链接中要直接出现*.JSP等。
 方法定义:
@@ -106,6 +116,7 @@ Service是一个系统的核心，所有的操作及判断都应当有该层完�
 
 另外如果是实现Preparabel拦截器的话，就应当使用paramsPrepareParamsStack拦截器栈
 Struts 2.0的设计上要求 modelDriven 在 params 之前调用，而业务中prepare要负责准备model，准备model又需要参数，这就需要在 prepare之前运行params拦截器设置相关参数，这个也就是创建paramsPrepareParamsStack的原因。 
+
 ##Action的设计原则##
 SSH整合的核心思想中Action交有Spring控制，对于每个请求Spring会重新创建一个对象，故Action的设计原则应该将其体积最小化，方法最简化。故在Action中只做简单的数据封装和传递，已经一些校验工作。其余的所有部分都应当交由Service去控制。
 
@@ -113,7 +124,9 @@ SSH整合的核心思想中Action交有Spring控制，对于每个请求Spring�
 时至今日，Java EE通常都会面向对象的方式来操作关系数据库，都会采用ORM框架来完成这一功能，其中Hiernate以其灵巧，轻便的封装赢得了准多开发者的青睐。
 Spring以良好的开放性，能与大部分发ORM框架良好整合。
 
-Spring提供的DAO支持
+
+##Spring提供的DAO支持##
+
 	DAO模式是一种标准的Java EE设计模式，DAO模式的核心思想是：所有的数据库访问，都通过DAO组建完成，DAO组建封装了数据库的增、删、改等原子操作。
 对于Java EE应用的架构，有非常多的选择，但不管细节如何变换。Java EE应用都大致可分为如下三层：
 		表现层
@@ -129,6 +142,7 @@ Spring提供了一系列的抽象类，这些抽象类将被作为应用中DAO�
 当通过Hibernate进行持久层访问时，必须先获得SessionFactory对象。它是单个数据库映射关系编译后的内存镜像。大部分情况下，一个JavaEE应用对应一个数据库，即对应一个SessionFactory对象
 Spring的IoC容器正好提供了这种管理方式，它不仅能以声明式的方式配置SessionFactory实例，也可以为SessionFactory注入数据源。
 例如：
+
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -167,8 +181,10 @@ Spring的IoC容器正好提供了这种管理方式，它不仅能以声明式�
         </property>
     </bean>
 </beans>
+
 一旦在Spring的IoC容器中配置了SessionFactory Bean，它将随应用的启动而加载，并可以充分利用IoC容器的功能，将SessionFactory Bean注入任何bean。比如DAO组件，一旦DAO组件获得了SessionFactory Bean的引用，就可以完成实际的数据库访问。
-使用HibernateTemplate
+
+##使用HibernateTemplate##
 HibernateTemplate提供持久层访问模板化，它需要提供一个SessionFactory的引用，就可执行持久化操作。SessionFactory对象既可通过构造参数传入，也可以通过设值方式传入，HibernateTemplate提供如下三个构造函数：
 	HibernateTemplate():构造一个默认的HibernateTemplate实例，因此创建了HibernateTemplate实例之后，还必须使用setSessionFactory(SessionFactory sf)为HibernateTemplate注入SessionFactory对象，然后才可以进行持久化操作。
 	HibernateTemplate(org.hibernate.SessionFactory sessionFactory)在构造时已经传入SessionFactory对象，创建后立即可以执行持久化操作。
@@ -211,6 +227,7 @@ public class PersonDaoImpl implements PersonDao{
 	}
 }
 利用spring进行注入
+
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://www.springframework.org/schema/beans"
@@ -276,13 +293,13 @@ HibernateTemplate提供很多实用的方法来完成基本的操作，比如增
 这俩个方法都需要一个HibernateCallback实例，HibernateCallback，实例可在任何有效的Hibernate数据库访问中使用。程序开发者通过HibernateCallback可以完全使用Hibernate灵活的方式来访问数据库，解决Spring封装Hibernate后灵活性不足的缺陷
 
 
-Hibernate
+#Hibernate#
 映射对象标识符
 Hibernate使用对象标识符（OID）来建立内存中的对象和数据库表中记录的对应关系。对象的OID和数据表的主键对应，Hibernate通过标识符生成器来为主键赋值。
 Hibernate推荐在数据表中使用代理主键，既不具备业务含义的字段，代理主键通常为整数类型，因为整数类型比字符串类型要节省更多的数据库空间
 在对象-关系映射文件中id元素用来设置对象标识符。Generator子元素用来设定标识符生成器。
 Hibernate提供了标识符生成器接口:identifierGenerator并提供了各种内置对象 
-主键生成策略
+##主键生成策略##
 Id
 Id设定持久化类的OID和表的主键的映射
 	-name：标识持久化类OID的属性名
@@ -296,17 +313,17 @@ Generator是id的子类，用来设定持久化类设定标识符生气
 
 Hibernate提供了内置的生成器：
 标识符生成器	描述
-Increment	代理主键。有hibernate自动以递增方式生成
-Identity	代理主键。有底层数据库生成标识符
-Sequence	代理主键。Hibernate根据底层数据库的序列生成标识符，这些要求底层数据库支持序列
-Hilo	代理主键。Hibernate分局high/low算法生成标识符
-Seqhilo	代理主键。使用一个高/低位算法来高校的生成long/short类型的标识符
-Native	代理主键。根据底层数据库对自动生成标识符的方式，自动选用identity
-Sequence或hilo
-Uuid.hex	代理主键。Hibernate采用128位的UUID算法生成标识符
-Uuid.string	适用于代理主键。UUID被选编码成一个16字符长的字符串
-Assigned	自然主键。有Java应用程序负责生成标识符
-Foreign	代理主键。使用另外一个相关的对象的标识符
+	Increment	代理主键。有hibernate自动以递增方式生成
+	Identity	代理主键。有底层数据库生成标识符
+	Sequence	代理主键。Hibernate根据底层数据库的序列生成标识符，这些要求底层数据库支持序列
+	Hilo	代理主键。Hibernate分局high/low算法生成标识符
+	Seqhilo	代理主键。使用一个高/低位算法来高校的生成long/short类型的标识符
+	Native	代理主键。根据底层数据库对自动生成标识符的方式，自动选用identity
+	Sequence或hilo
+	Uuid.hex	代理主键。Hibernate采用128位的UUID算法生成标识符
+	Uuid.string	适用于代理主键。UUID被选编码成一个16字符长的字符串
+	Assigned	自然主键。有Java应用程序负责生成标识符
+	Foreign	代理主键。使用另外一个相关的对象的标识符
 Property
 Property元素用于指定类型的属性和表的字段映射
 -name：指定改持久化类的属性名字
@@ -355,7 +372,7 @@ Java时间和日期类型Hibernate映射
 在java中，代表时间和日期的类型包括：java.util.Date和java.util.Calendar。此外JDBC按批中还提供3个扩展了Java.util.Date类的子类：java.sql.Date。java.sql.Time和java.sql.Timestamp
 这三个类分别和标准的SQL类型中的DATE，time和timestamp类型对应
  
-使用Hibernate内置映射类型
+##使用Hibernate内置映射类型##
 以下情况必须显示指定hibernate映射类型
 	一个java类型可能对应多个hibernate映射类型。例如：如果持久化类的属性为：java.Util.Date，对应的hibernate映射类型可以是data，time或timestamp，此时必须根据对应的数据表的字段的SQL类型，来确定hibernate映射类型，如果字段为date类型，那么hibernate映射类型为date；如果字段为time类型，那么hibernate映射类型为time，如果字段为TIMESTATMP类型，那么hibernate映射类型为timestamp
 例如：
@@ -382,6 +399,7 @@ public class CustomerVO {
     //getter/setter
 }
 ================================映射文件=================================
+
 <?xml version="1.0"?>
 <!DOCTYPE hibernate-mapping PUBLIC
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
@@ -414,6 +432,7 @@ public class CustomerVO {
 
 </hibernate-mapping>
 =====================测试========================
+
 package hibernate3.CoreTest;
 
 
@@ -462,7 +481,8 @@ public class ConfigFileTest {
 		session.save(obj);
 	}
 }
-映射组成关系
+
+##映射组成关系##
 
 建立域模型和关系数据模型有着不同的出发点：
 	-域模型：由程序代码组成，通过细化持久化类的粒度可提供代码的可重用性，简化编程
@@ -491,7 +511,8 @@ Component元素用来映射组成关系，常用的属性：
 		<property name="vocationWithPay" column="vocation_with_pay" type="integer"></property>
 		<property name="yearPay" column="year_pay" type="integer"></property>
 	</component>
-Spring整合Struts
+	
+#Spring整合Struts#
 整合Spring和Struts其实就是适用Spring的IOC容器管理Struts2的Action。
 首先将相应的Jar文件复制到Web/lib目录下，记得复制struts2-spring-plugin-xxx.jar文件。
 在web.xml文件中配置struts2
@@ -537,22 +558,25 @@ Action 的实现类, 而是指向 Spring 容器中 Action 实例的 ID
 <action name="helloworld" class="userAction">
 <result>/success.jsp</result>
 </action>
-原理
+
+##原理##
 Spring 插 件 是 通 过 覆 盖 Struts2 的
 ObjectFactory 来增强核心框架对象的创建。当创建一个对象的时候，它会用
 Struts2 配置文件中的 class 属性去和 Spring 配置文件中的 id 属性进行关联，
 如果能找到， 则由 Spring 创建， 否则由 Struts 2 框架自身创建， 然后由 Spring
 来装配。
-通过Spring AOP配置业务层事务
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop"
-	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+##通过Spring AOP配置业务层事务##
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
 
 
 	<!-- 通过context指定外部引用的属性文件 -->
@@ -647,7 +671,9 @@ Struts2 配置文件中的 class 属性去和 Spring 配置文件中的 id 属�
 		</aop:aspect>
 	</aop:config>
 </beans>
-利用注解和AOP实现业务的日志记录
+
+##利用注解和AOP实现业务的日志记录##
+
 利用AOP思想在所有业务层的方法调用上加入业务日志。
 首先建立业务日志实体
 public class BusinessLog {
@@ -679,7 +705,8 @@ public class BusinessLog {
 		return " ["+(endTime.getTime() - startTime.getTime())+" - "+ result+"] -> "+operationName+"("+operationParam+")";
 	}
 }
-建立并定义AOP切入点
+
+##建立并定义AOP切入点##
 public class LogInterceptor implements Interceptor {
 
 	private static final long serialVersionUID = 965894819250440297L;
@@ -742,7 +769,8 @@ public class LogInterceptor implements Interceptor {
 			<aop:around pointcut="execution(* *..*ServiceImpl.*(..)) and !bean(businessLogService)" method="logAop" />
 		</aop:aspect>
 	</aop:config>
-单元测试
+	
+#单元测试#
 	@Test
 	public void getMenuList(){
 		RightsService service = (RightsService) Context.getBean("rightsService");
